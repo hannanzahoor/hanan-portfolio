@@ -4,9 +4,8 @@ import { BackgroundLayers } from "@/components/layout/BackgroundLayers";
 import { Footer } from "@/components/layout/Footer";
 import { Nav } from "@/components/layout/Nav";
 import { profile } from "@/data/profile";
-import { MAILTO } from "@/lib/contact";
 import { site } from "@/data/site";
-import { social } from "@/data/social";
+import { structuredData } from "@/lib/schema";
 import "./globals.css";
 
 const sans = Geist({
@@ -21,6 +20,13 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+/**
+ * The shared social image. Dimensions are the portrait's real pixel size —
+ * they must stay in step with public/portrait.jpg, because crawlers lay the
+ * card out from these numbers before the file itself is fetched.
+ */
+const OG_IMAGE = { url: "/portrait.jpg", width: 1178, height: 1335 } as const;
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: site.title,
@@ -28,18 +34,6 @@ export const metadata: Metadata = {
   applicationName: site.shortTitle,
   authors: [{ name: profile.name, url: site.url }],
   creator: profile.name,
-  keywords: [
-    "Hanan Zahoor",
-    "AI/ML Engineer",
-    "Software Engineer",
-    "Machine Learning",
-    "LLM",
-    "Generative AI",
-    "Backend Developer",
-    "Full Stack Developer",
-    "Python",
-    "Bangalore",
-  ],
   alternates: { canonical: "/" },
   openGraph: {
     type: "profile",
@@ -50,18 +44,24 @@ export const metadata: Metadata = {
     locale: site.locale,
     images: [
       {
-        url: "/portrait.jpg",
-        width: 895,
-        height: 1017,
+        url: OG_IMAGE.url,
+        width: OG_IMAGE.width,
+        height: OG_IMAGE.height,
         alt: `${profile.name} — ${profile.role}`,
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    /*
+      `summary`, not `summary_large_image`: the shared image is the 4:5
+      portrait, and a large card crops to roughly 1.91:1 — which would cut
+      the subject's head off. `summary` crops square and keeps the face.
+      Switch back to a large card only alongside a ~1200x630 asset.
+    */
+    card: "summary",
     title: site.title,
     description: site.description,
-    images: ["/portrait.jpg"],
+    images: [OG_IMAGE.url],
   },
   robots: {
     index: true,
@@ -85,38 +85,6 @@ export const viewport: Viewport = {
  * components/layout/ThemeToggle.tsx.
  */
 const THEME_BOOT = `try{var d=document.documentElement,s=localStorage.getItem("theme"),t=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.dataset.theme=t;d.style.colorScheme=t}catch(e){document.documentElement.dataset.theme="dark"}`;
-
-/** schema.org Person, built from the same data the page renders. */
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: profile.name,
-  url: site.url,
-  image: `${site.url}/portrait.jpg`,
-  email: MAILTO,
-  jobTitle: profile.roleParts,
-  description: site.description,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Bangalore",
-    addressCountry: "IN",
-  },
-  alumniOf: {
-    "@type": "CollegeOrUniversity",
-    name: "Jain University",
-  },
-  worksFor: { "@type": "Organization", name: "Deloitte" },
-  knowsAbout: [
-    "Artificial Intelligence",
-    "Machine Learning",
-    "Large Language Models",
-    "Generative AI",
-    "Backend Development",
-    "REST APIs",
-    "Full Stack Development",
-  ],
-  sameAs: social.map((item) => item.href),
-};
 
 export default function RootLayout({
   children,
@@ -143,7 +111,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           // Content is generated from our own data layer, not user input.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body>

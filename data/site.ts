@@ -6,8 +6,13 @@ export const site = {
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? fallbackUrl).replace(/\/$/, ""),
   title: `${profile.name} - AI/ML Engineer & Full-Stack Developer`,
   shortTitle: profile.name,
+  /**
+   * Kept under ~155 characters so search engines show it whole rather than
+   * truncating mid-sentence. Feeds the meta description, Open Graph and
+   * Twitter/X cards, and the JSON-LD graph — one string, one source.
+   */
   description:
-    "Portfolio of Hanan Zahoor, an AI/ML and software engineering student building LLM-powered applications, machine learning systems, backend services, and full-stack software.",
+    "Hanan Zahoor — AI/ML Engineer and Full-Stack Developer in Bangalore. Building LLM applications, ML pipelines, and backend systems.",
   locale: "en_IN",
 } as const;
 
