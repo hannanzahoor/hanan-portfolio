@@ -50,25 +50,33 @@ export function Hero() {
           <div data-reveal className="min-w-0">
             <StatusPill label={profile.availabilityShort} />
 
-            <h1
-              id="home-title"
+            {/*
+              The heading text and the oversized greeting are separated on
+              purpose.
+
+              While both lived inside the h1, its text extracted as
+              "$ hi, I'mHananHanan Zahoor — ..." — the decorative span and the
+              screen-reader span ran together with no separator, and "Hanan"
+              appeared twice. Now the h1 carries the heading text alone, and
+              the greeting renders beside it as the decoration it is.
+
+              The greeting keeps the h1's original classes, so the rendered box
+              is pixel-identical; the h1 is out of flow and contributes no
+              layout. Only what a screen reader or crawler reads has changed.
+            */}
+            <h1 id="home-title" className="sr-only">
+              {profile.name} — AI/ML Engineer and Full-Stack Developer
+            </h1>
+
+            <p
+              aria-hidden="true"
               className="mt-7 font-mono text-[clamp(38px,6.4vw,68px)] leading-[1.04] font-medium tracking-[-0.04em] text-fg-bright"
             >
-              {/*
-                The visible greeting is decorative for assistive tech; the
-                heading still exposes the full name so the page's main heading
-                identifies Hanan rather than reading "$ hi, I'm Hanan".
-              */}
-              <span aria-hidden="true">
-                <span className="font-light text-fg-faint">$</span> hi, I&apos;m
-                <br />
-                <span className="text-accent">Hanan</span>
-                <span className="caret ml-1.5" />
-              </span>
-              <span className="sr-only">
-                {profile.name} — AI/ML Engineer and Software Engineer
-              </span>
-            </h1>
+              <span className="font-light text-fg-faint">$</span> hi, I&apos;m
+              <br />
+              <span className="text-accent">Hanan</span>
+              <span className="caret ml-1.5" />
+            </p>
 
             {/*
               Each unit is nowrap so the line only ever breaks at a separator —

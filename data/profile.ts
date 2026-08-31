@@ -6,9 +6,16 @@ export const profile = {
   name: "Hanan Zahoor",
   shortName: "Hanan",
   initials: "HZ",
-  /** Canonical role string used in page metadata, JSON-LD and by the assistant. */
-  role: "AI/ML Engineer · Software Engineer",
-  roleParts: ["AI/ML Engineer", "Software Engineer"],
+  /**
+   * Canonical role string used in page metadata, JSON-LD, image alt text and
+   * by the assistant. Kept in step with the site title and the About role
+   * line so the page presents one consistent identity rather than three.
+   *
+   * This is how Hanan describes his work, not an employment title — the
+   * actual job titles live in data/experience.ts and are untouched.
+   */
+  role: "AI/ML Engineer · Full-Stack Developer",
+  roleParts: ["AI/ML Engineer", "Full-Stack Developer"],
   /** Role line shown in the About section. */
   roleDisplay: "Full-Stack Developer · AI/ML Engineer",
   location: "Bangalore, India",

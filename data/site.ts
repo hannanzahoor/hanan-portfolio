@@ -12,7 +12,7 @@ export const site = {
    * Twitter/X cards, and the JSON-LD graph — one string, one source.
    */
   description:
-    "Hanan Zahoor — AI/ML Engineer and Full-Stack Developer in Bangalore. Building LLM applications, ML pipelines, and backend systems.",
+    "Hanan Zahoor — AI/ML Engineer and Full-Stack Developer in Bangalore. Portfolio of LLM applications, ML pipelines, and backend systems.",
   locale: "en_IN",
 } as const;
 
