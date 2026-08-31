@@ -1,0 +1,168 @@
+import type { Metadata, Viewport } from "next";
+import { Geist, JetBrains_Mono } from "next/font/google";
+import { BackgroundLayers } from "@/components/layout/BackgroundLayers";
+import { Footer } from "@/components/layout/Footer";
+import { Nav } from "@/components/layout/Nav";
+import { profile } from "@/data/profile";
+import { MAILTO } from "@/lib/contact";
+import { site } from "@/data/site";
+import { social } from "@/data/social";
+import "./globals.css";
+
+const sans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: site.title,
+  description: site.description,
+  applicationName: site.shortTitle,
+  authors: [{ name: profile.name, url: site.url }],
+  creator: profile.name,
+  keywords: [
+    "Hanan Zahoor",
+    "AI/ML Engineer",
+    "Software Engineer",
+    "Machine Learning",
+    "LLM",
+    "Generative AI",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Python",
+    "Bangalore",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "profile",
+    url: site.url,
+    title: site.title,
+    description: site.description,
+    siteName: site.shortTitle,
+    locale: site.locale,
+    images: [
+      {
+        url: "/portrait.jpg",
+        width: 895,
+        height: 1017,
+        alt: `${profile.name} — ${profile.role}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+    images: ["/portrait.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fafbfa" },
+  ],
+  colorScheme: "light dark",
+};
+
+/**
+ * Inline, render-blocking theme resolution. Kept as a plain string so it can
+ * be minified by hand and audited at a glance — it is the only script that
+ * must run before paint. The storage key matches THEME_STORAGE_KEY in
+ * components/layout/ThemeToggle.tsx.
+ */
+const THEME_BOOT = `try{var d=document.documentElement,s=localStorage.getItem("theme"),t=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.dataset.theme=t;d.style.colorScheme=t}catch(e){document.documentElement.dataset.theme="dark"}`;
+
+/** schema.org Person, built from the same data the page renders. */
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  url: site.url,
+  image: `${site.url}/portrait.jpg`,
+  email: MAILTO,
+  jobTitle: profile.roleParts,
+  description: site.description,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Bangalore",
+    addressCountry: "IN",
+  },
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "Jain University",
+  },
+  worksFor: { "@type": "Organization", name: "Deloitte" },
+  knowsAbout: [
+    "Artificial Intelligence",
+    "Machine Learning",
+    "Large Language Models",
+    "Generative AI",
+    "Backend Development",
+    "REST APIs",
+    "Full Stack Development",
+  ],
+  sameAs: social.map((item) => item.href),
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    // data-theme is written by the boot script below before React hydrates,
+    // so the attribute legitimately differs from the server markup.
+    <html
+      lang="en"
+      className={`${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/*
+          Resolves the theme before first paint: an explicit choice wins,
+          otherwise the system preference decides. Runs synchronously in the
+          head so the correct palette is applied on the very first frame and
+          the page never flashes the wrong theme.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+
+        <script
+          type="application/ld+json"
+          // Content is generated from our own data layer, not user input.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
+      </head>
+      <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:border focus:border-accent focus:bg-surface focus:px-4 focus:py-2 focus:font-mono focus:text-[13px] focus:text-fg-bright"
+        >
+          Skip to content
+        </a>
+
+        <BackgroundLayers />
+        <Nav />
+
+        <main id="main" className="relative z-[1]">
+          {children}
+        </main>
+
+        <Footer />
+      </body>
+    </html>
+  );
+}

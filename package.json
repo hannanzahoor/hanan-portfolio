@@ -1,0 +1,33 @@
+{
+  "name": "hanan-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal portfolio of Hanan Zahoor — AI/ML Engineer & Software Engineer.",
+  "scripts": {
+    "knowledge": "node scripts/build-knowledge-index.mjs",
+    "predev": "npm run knowledge",
+    "dev": "next dev",
+    "prebuild": "npm run knowledge",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:assistant": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/register-hooks.mjs scripts/test-assistant.mts",
+    "test": "npm run typecheck && npm run test:assistant"
+  },
+  "dependencies": {
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.4.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.3.3",
+    "tailwindcss": "4.3.3",
+    "typescript": "^6.0.3"
+  }
+}
