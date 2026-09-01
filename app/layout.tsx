@@ -75,7 +75,15 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
     { media: "(prefers-color-scheme: light)", color: "#fafbfa" },
   ],
-  colorScheme: "light dark",
+  /*
+    Dark first: this meta is parsed before the theme boot script runs, and it
+    is what the browser uses to paint the canvas and native controls in that
+    window. Listing light first asked the UA to follow the OS preference,
+    which could show a light canvas for a frame on a light-themed machine.
+    Dark first matches the site's default; the boot script still writes an
+    inline color-scheme, so an explicit light choice continues to win.
+  */
+  colorScheme: "dark light",
 };
 
 /**
@@ -83,8 +91,17 @@ export const viewport: Viewport = {
  * be minified by hand and audited at a glance — it is the only script that
  * must run before paint. The storage key matches THEME_STORAGE_KEY in
  * components/layout/ThemeToggle.tsx.
+ *
+ * Dark is the site's default, so only an explicit stored "light" produces the
+ * light theme. The OS `prefers-color-scheme` setting is deliberately not
+ * consulted: a visitor on a light-themed machine should still meet the site
+ * in dark, and only leave it by choosing to.
+ *
+ * Anything other than "light" — no value, "dark", or a stale/corrupt entry —
+ * resolves to dark, matching how readTheme() and the cross-tab storage
+ * listener in ThemeToggle.tsx read the same key.
  */
-const THEME_BOOT = `try{var d=document.documentElement,s=localStorage.getItem("theme"),t=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.dataset.theme=t;d.style.colorScheme=t}catch(e){document.documentElement.dataset.theme="dark"}`;
+const THEME_BOOT = `try{var d=document.documentElement,t=localStorage.getItem("theme")==="light"?"light":"dark";d.dataset.theme=t;d.style.colorScheme=t}catch(e){var r=document.documentElement;r.dataset.theme="dark";r.style.colorScheme="dark"}`;
 
 export default function RootLayout({
   children,
@@ -101,10 +118,10 @@ export default function RootLayout({
     >
       <head>
         {/*
-          Resolves the theme before first paint: an explicit choice wins,
-          otherwise the system preference decides. Runs synchronously in the
-          head so the correct palette is applied on the very first frame and
-          the page never flashes the wrong theme.
+          Resolves the theme before first paint: a stored choice wins,
+          otherwise the site's dark default. Runs synchronously in the head so
+          the correct palette is applied on the very first frame and the page
+          never flashes the wrong theme.
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
 
